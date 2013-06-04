@@ -1,0 +1,61 @@
+/*
+ * Copyright 2013 i'm Spa
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package it.imwatch.bluetooth.demo.callbacks;
+
+import android.os.Handler;
+import android.os.Message;
+import it.imwatch.bluetooth.api.interfaces.SerialPortClientCallbacks;
+import it.imwatch.bluetooth.demo.EventLogActivity;
+
+/**
+ * Used to receive callbacks from the Bluetooth stack.
+ * These methods are automatically called whenever some data is sent by the remote device
+ * or if the device disconnects.
+ * <p/>
+ * Holds a Handler instance for notifying the UI
+ */
+public class ClientCallbacks implements SerialPortClientCallbacks {
+
+    Handler mHandler;
+
+    public ClientCallbacks(Handler handler) {
+        mHandler = handler;
+    }
+
+    /**
+     * Called when the remote device sends data to the client.
+     *
+     * @param dataLength Length in bytes of received data
+     */
+    @Override
+    public void onDataReceived(int dataLength) {
+        Message msg = mHandler.obtainMessage();
+
+        // Data received
+        msg.what = EventLogActivity.DATA_RECEIVED;
+        msg.arg1 = dataLength;
+
+        mHandler.sendMessage(msg);
+    }
+
+    /** Callback called when the client has disconnected. */
+    @Override
+    public void onDisconnected() {
+        // Disconnected
+        mHandler.sendEmptyMessage(EventLogActivity.DISCONNECTED);
+    }
+}
